@@ -67,10 +67,10 @@ struct AC_SAVE {
             byte minute;
             byte hour;
             byte day;
-            byte dayOfWeek < comment="Ex 0=Sunday, 1=Monday, ..." >;
-            byte month;
+            byte dayOfWeek < comment=DayOfWeek >;
+            byte month < comment=MonthString >;
             ushort year;
-        } lastPlayDate; // may not be "last play" date
+        } lastPlayDate < comment=DateString >; // may not be "last play" date
     
         ushort checksum < format=hex >;
         int unknownHeaderData[3] < format=hex >;
@@ -104,9 +104,9 @@ struct AC_SAVE {
         int padding6[6] < format=hex >;
         ushort padding7 < format=hex >;
         struct BIRTHDAY {
-            byte month;
+            byte month < comment=MonthString >;
             byte day;
-        } birthday;
+        } birthday < comment=BirthdayString >;
         int padding8[19] < format=hex >;
         int resetCode < format=hex >;
         int bitmapData[77] < format=hex >; // research this more
@@ -124,7 +124,7 @@ struct AC_SAVE {
 
     struct MESSAGEBOARD_POST {
         char body[0xC0];
-        DATE postDate;
+        DATE postDate < comment=DateString >;
     } messageBoardPost[15];
     
     int messageBoardPadding;
@@ -166,7 +166,7 @@ struct AC_SAVE {
         } gyroid;
 
         int gyroidPadding < format=hex >;
-        DATE enterDate; // may not be enter but it's a date
+        DATE enterDate < comment=DateString >; // may not be enter but it's a date
         byte cockroachCount < format=hex >;
         byte houseEndPadding[0x2F] < format=hex >;
     } house[4];
@@ -194,7 +194,7 @@ struct AC_SAVE {
             char playerTownName[8];
             ushort playerId < format=hex >;
             ushort playerTownId < format=hex >;
-            DATE metDate;
+            DATE metDate < comment=DateString >;
             char metTownName[8]; // unsure about if it's the "met" town name.
             ushort metTownId < format=hex >;
             byte unknown[0x29] < format=hex >;
@@ -224,11 +224,11 @@ struct AC_SAVE {
     struct NOOKS_SHOP {
         ushort items[24] < format=hex >;
         byte unknownShopData[0x28] < format=hex >;
-        byte shopLevelUpper2Bits < format=hex,comment=ShopSize >;
+        byte shopLevelUpper2Bits < format=binary,comment=ShopSize >;
         byte unknownShopByte < format=hex >;
         uint shopPurchaseSum < format=decimal >; // must be greater or equal to 240,000 for Nookingtons
-        DATE shopDate1; // two unknown dates
-        DATE shopDate2;
+        DATE shopDate1 < comment=DateString >; // two unknown dates
+        DATE shopDate2 < comment=DateString >;
         int visitorHasPurchasedFlag < format=hex,comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
     } nooksShop;
     
@@ -307,4 +307,122 @@ string PlayerGender(byte Gender)
         default:
             return "Invalid Gender";
     }
+}
+
+string DayOfWeek(byte WeekDay)
+{
+    switch (WeekDay)
+    {
+        case 0x00:
+            return "Sunday";
+        case 0x01:
+            return "Monday";
+        case 0x02:
+            return "Tuesday";
+        case 0x03:
+            return "Wednesday";
+        case 0x04:
+            return "Thursday";
+        case 0x05:
+            return "Friday";
+        case 0x06:
+            return "Saturday";
+        default:
+            return "Invalid Week Day";
+    }
+}
+
+string MonthString(byte Month)
+{
+    switch (Month)
+    {
+        case 0x01:
+            return "Januaray";
+        case 0x02:
+            return "February";
+        case 0x03:
+            return "March";
+        case 0x04:
+            return "April";
+        case 0x05:
+            return "May";
+        case 0x06:
+            return "June";
+        case 0x07:
+            return "July";
+        case 0x08:
+            return "August";
+        case 0x09:
+            return "September";
+        case 0x0A:
+            return "October";
+        case 0x0B:
+            return "November";
+        case 0x0C:
+            return "December";
+        default:
+            return "Invalid Month Value";
+    }
+}
+
+string DayString(byte Day)
+{
+    string day;
+
+    SPrintf(day, "%d", Day);
+
+    if (Day > 10 && Day < 20)
+        day += "th";
+    else if (Day % 10 == 1)
+        day += "st";
+    else if (Day % 10 == 2)
+        day += "nd";
+    else if (Day % 10 == 3)
+        day += "rd";
+    else
+        day += "th";
+
+    return day;
+}
+
+string HourString(byte Hour)
+{
+    string hour;
+
+    if (Hour == 0)
+        return "12";
+    else if (Hour > 12)
+        SPrintf(hour, "%d", Hour - 12);
+    else
+        SPrintf(hour, "%d", Hour);
+    
+    return hour; 
+}
+
+string GetAmPm(byte hour)
+{
+    if (hour < 12)
+        return "AM";
+    else
+        return "PM";
+}
+
+string DateString(DATE &date)
+{
+    string year;
+    string minute;
+    string second;
+
+    SPrintf(year, "%d", date.year);
+    SPrintf(minute, "%02d", date.minute);
+    SPrintf(second, "%02d", date.second);
+    
+    return DayOfWeek(date.dayOfWeek) + ", " + MonthString(date.month) + " "
+        + DayString(date.day) + ", " + year + " at " + HourString(date.hour) + ":"
+        + minute + ":" + second + " " + GetAmPm(date.hour);
+}
+
+string BirthdayString(BIRTHDAY &birthday)
+{
+    return MonthString(birthday.month) + " " + DayString(birthday.day);
 }
