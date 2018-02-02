@@ -13,86 +13,96 @@
 
 FSeek(0x26040);
 struct AC_SAVE {
-    int static;
+    int static < format=hex >;
     char gameId[4];
-    ushort townId;
-    byte lastPlayDate[8];
-    ushort checksum;
-    int prepadding[3];
+    ushort townId < format=hex >;
+    
+    struct DATE {
+        byte second;
+        byte minute;
+        byte hour;
+        byte day;
+        byte dayOfWeek < comment="Ex 0=Sunday, 1=Monday, ..." >;
+        byte month;
+        ushort year;
+    } lastPlayDate; // may not be "last play" date
+
+    ushort checksum < format=hex >;
+    int prepadding[3] < format=hex >;
     struct PLAYER {
         char name[8];
         char townName[8];
-        ushort playerId;
-        ushort townId;
-        byte gender;
-        byte faceType;
-        byte resetCount;
-        byte unknown;
-        int padding[20];
+        ushort playerId < format=hex >;
+        ushort townId < format=hex >;
+        byte gender < format=hex >;
+        byte faceType < format=hex >;
+        byte resetCount < format=hex >;
+        byte unknown < format=hex >;
+        int padding[20] < format=hex >;
         struct INVENTORY {
-            ushort itemId[15];
+            ushort itemId[15] < format=hex >;
         } inventory;
-        ushort padding1;
-        int padding2;
-        uint bells;
-        uint debt;
-        int padding3[260];
-        ushort heldItem;
-        ushort padding4;
-        char unknownLetterStrings[0x38];
+        ushort padding1 < format=hex >;
+        int padding2 < format=hex >;
+        uint bells < format=decimal >;
+        uint debt < format=decimal >;
+        int padding3[260] < format=hex >;
+        ushort heldItem < format=hex >;
+        ushort padding4 < format=hex >;
+        char unknownLetterStrings[0x38] < format=hex >;
 
         struct MAIL {
             char receipiantName[8];
             char townName[8];
-            ushort receipiantId;
-            ushort townId;
-            ushort unknown1;
+            ushort receipiantId < format=hex >;
+            ushort townId < format=hex >;
+            ushort unknown1 < format=hex >;
             char senderName[8];
             char senderTownName[8];
-            ushort senderId;
-            ushort senderTownId;
-            byte eventType; // Unsure about this
-            byte unknown2;
-            ushort presentId;
-            byte read;
-            byte unknown3;
-            byte senderType; // Don't know about this
-            byte stationaryItemIdLowerByte;
+            ushort senderId < format=hex >;
+            ushort senderTownId < format=hex >;
+            byte eventType < format=hex >; // Unsure about this
+            byte unknown2 < format=hex >;
+            ushort presentId < format=hex >;
+            byte read < format=hex >;
+            byte unknown3 < format=hex >;
+            byte senderType < format=hex >; // Don't know about this
+            byte stationaryItemIdLowerByte < format=hex >;
             char body[0xF8];
         } mail[10]; // struct size: 0x12A
 
-        ushort pocketsBackgroundItem;
-        int padding5;
-        ushort shirt;
-        int padding6[6];
-        ushort padding7;
+        ushort pocketsBackgroundItem < format=hex >;
+        int padding5 < format=hex >;
+        ushort shirt < format=hex >;
+        int padding6[6] < format=hex >;
+        ushort padding7 < format=hex >;
         struct BIRTHDAY {
             byte month;
             byte day;
         } birthday;
-        int padding8[19];
-        int resetCode;
-        int bitmapData[77];
-        uint savings;
-        int padding9[4];
+        int padding8[19] < format=hex >;
+        int resetCode < format=hex >;
+        int bitmapData[77] < format=hex >; // research this more
+        uint savings < format=decimal >;
+        int padding9[4] < format=hex >;
         struct PATTERN {
             char name[16];
-            byte palette;
-            byte unused[15];
-            byte doublePixelDataArray[0x200];
+            byte palette < format=hex >;
+            byte unused[15] < format=hex >;
+            byte doublePixelDataArray[0x200] < format=hex >;
         } pattern[8];
-        int padding10[34]; // Padding dictates unknowns.
-        byte tan;
-        byte padding11[3];
-        int padding12[29];
+        int padding10[34] < format=hex >; // Padding dictates unknowns.
+        byte tan < format=hex >;
+        byte padding11[3] < format=hex >;
+        int padding12[29] < format=hex >;
     } player[4];
     char townName[8];
-    ushort static2;
-    ushort townId;
+    ushort static2 < format=hex >;
+    ushort townId < format=hex >;
 
     struct MESSAGEBOARD_POST {
         char body[0xC0];
-        byte date[8];
+        DATE postDate;
     } messageBoardPost[15];
     
     int messageBoardPadding;
@@ -100,23 +110,23 @@ struct AC_SAVE {
     struct HOUSE {
         char ownerName[8];
         char townName[8];
-        ushort ownerId;
-        ushort townId;
-        byte houseFlags[0x18];
-        byte roofColor;
-        byte roofColorTomorrow;
-        ushort housePadding;
-        int housePadding2[2];
+        ushort ownerId < format=hex >;
+        ushort townId < format=hex >;
+        byte houseFlags[0x18] < format=hex >;
+        byte roofColor < format=hex >;
+        byte roofColorTomorrow < format=hex >;
+        ushort housePadding < format=hex >;
+        int housePadding2[2] < format=hex >;
         
         struct ROOM {
             struct LAYER {
-                ushort items[0x100];
-                byte itemsEnabledBitmap[0x20]; // each byte has 8 floor spaces attributed to it.
-                int layerPadding[2];
+                ushort items[0x100] < format=hex >;
+                byte itemsEnabledBitmap[0x20] < format=binary >; // each byte has 8 floor spaces attributed to it.
+                int layerPadding[2] < format=hex >;
             } layer[4];
-            byte carpetLowerByte;
-            byte wallpaperLowerByte;
-            byte unknown[6];
+            byte carpetLowerByte < format=hex >;
+            byte wallpaperLowerByte < format=hex >;
+            byte unknown[6] < format=hex >;
         } room[3];
 
         MAIL mail[10];
@@ -124,107 +134,108 @@ struct AC_SAVE {
         struct GYROID {
 
             struct GYROID_ITEM {
-                ushort itemId;
-                byte unknown;
-                byte sellType;
-                uint sellPrice;
+                ushort itemId < format=hex >;
+                byte unknown < format=hex >;
+                byte sellType < format=hex >;
+                uint sellPrice < format=decimal >;
             } gyroidItem[4];
             
             char message[0x80];
         } gyroid;
 
-        int gyroidPadding;
-        byte enterDate[8]; // may not be enter but it's a date
-        byte cockroachCount;
-        byte houseEndPadding[0x2F];
+        int gyroidPadding < format=hex >;
+        DATE enterDate; // may not be enter but it's a date
+        byte cockroachCount < format=hex >;
+        byte houseEndPadding[0x2F] < format=hex >;
     } house[4];
 
     struct TOWN {
         struct TOWN_ACRE_ITEMS {
-            ushort items[256];
+            ushort items[256] < format=hex >;
         } townAcreItems[30];
 
-        ushort townAcreId[70];
+        ushort townAcreId[70] < format=hex >;
     } town;
 
     int townEndPadding;
     
     struct VILLAGER {
-        ushort villagerId;
-        ushort townId;
+        ushort villagerId < format=hex >;
+        ushort townId < format=hex >;
         char townName[8];
-        byte speechType; // Usually the lower byte of the villager id. 0xFF for islanders.
-        byte personality;
-        ushort padding;
+        byte speechType < format=hex >; // Usually the lower byte of the villager id. 0xFF for islanders.
+        byte personality < format=hex >;
+        ushort padding < format=hex >;
         
         struct PLAYER_ENTRY {
             char playerName[8];
             char playerTownName[8];
-            ushort playerId;
-            ushort playerTownId;
-            byte metDate[8];
+            ushort playerId < format=hex >;
+            ushort playerTownId < format=hex >;
+            DATE metDate;
             char metTownName[8]; // unsure about if it's the "met" town name.
-            ushort metTownId;
-            byte unknown[0x29];
-            char savedLetter[0xC0];
-            byte unknown2[0x29];
+            ushort metTownId < format=hex >;
+            byte unknown[0x29] < format=hex >;
+            char savedLetter[0xC0] < format=hex >;
+            byte unknown2[0x29] < format=hex >;
         } playerEntry[7];
 
-        byte unknownByte;
-        byte houseMapCoordinates[4];
+        byte unknownByte < format=hex >;
+        byte houseMapCoordinates[4] < format=hex >;
         char catchphrase[10];
-        byte unknownByte2;
-        byte unknownData[14];
+        byte unknownByte2 < format=hex >;
+        byte unknownData[14] < format=hex >;
         char unknownCharArray1[8]; // probably something to do with player(s)
         char unknownCharArray2[8];
-        ushort unknownShort1;
-        ushort unknownShort2;
-        byte unknownData2[6];
+        ushort unknownShort1 < format=hex >;
+        ushort unknownShort2 < format=hex >;
+        byte unknownData2[6] < format=hex >;
         char somePlayerName[8];
         char unknownCharArray3[8];
-        int charArrayPadding;
-        ushort shirt;
-        byte unknownData3[0xA2];
+        int charArrayPadding < format=hex >;
+        ushort shirt < format=hex >;
+        byte unknownData3[0xA2] < format=hex >;
     } villager[15];
 
-    byte unknownAfterVillagerData[0xDE]; // some string stuff
+    byte unknownAfterVillagerData[0xDE] < format=hex >; // some string stuff
     
     struct NOOKS_SHOP {
-        ushort items[24];
-        byte unknownShopData[0x28];
-        byte shopLevel < comment="Lower 2 bits (0 = Cranny, 1 = Nook 'n' Go, 2 = Nookway)" >;
-        byte unknownShopByte;
-        uint shopPurchaseSum; // must be greater or equal to 240,000 for Nookingtons
-        byte shopDateData[16]; // two unknown dates
-        int visitorHasPurchasedFlag < comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
+        ushort items[24] < format=hex >;
+        byte unknownShopData[0x28] < format=hex >;
+        byte shopLevel < format=hex,comment="Lower 2 bits (0 = Cranny, 1 = Nook 'n' Go, 2 = Nookway)" >;
+        byte unknownShopByte < format=hex >;
+        uint shopPurchaseSum < format=decimal >; // must be greater or equal to 240,000 for Nookingtons
+        DATE shopDate1; // two unknown dates
+        DATE shopDate2;
+        int visitorHasPurchasedFlag < format=hex,comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
     } nooksShop;
     
-    byte unknownAfterNooksShopData[0x21C];
+    byte unknownAfterNooksShopData[0x21C] < format=hex >;
     MAIL unknownMail[7]; // Sent mail?
-    byte unknownPreBuriedData[0x5A];
-    byte buriedBitmap[0x3C0];
-    byte unknownAfterBuriedData[0x124];
+    byte unknownPreBuriedData[0x5A] < format=hex >;
+    byte buriedBitmap[0x3C0] < format=binary >;
+    byte unknownAfterBuriedData[0x124] < format=hex >;
     PATTERN ableSistersPatterns[8];
-    byte unknownAfterAbleSistersData[0x40];
+    byte unknownAfterAbleSistersData[0x40] < format=hex >;
 
     struct ISLAND {
         char islandName[8];
         char townName[8];
-        ushort staticIslandId;
-        ushort townId;
+        ushort staticIslandId < format=hex >;
+        ushort townId < format=hex >;
         TOWN_ACRE_ITEMS islandAcreItems[2];
-        byte acreItemsPadding[0xC];
+        byte acreItemsPadding[0xC] < format=hex >;
         ROOM islandCabana;
-        byte cabanaUnknownAfterData[0x238];
+        byte cabanaUnknownAfterData[0x238] < format=hex >;
         VILLAGER islander; // Should make a custom struct. Islander's player entires can include a furniture item to customize their house.
-        byte islandBuriedBitmap[0x40];
-        byte unknownIslandData[0x118];
+        byte islandBuriedBitmap[0x40] < format=binary >;
+        byte unknownIslandData[0x118] < format=hex >;
         PATTERN flag;
     } island;
 
-    byte unknownAfterIslandData[0x44];
-    byte townGrassType;
-    byte unknownEndData[0x1E7B];
+    byte unknownAfterIslandData[0x44] < format=hex >;
+    byte townGrassType < format=hex >;
+    byte unknownEndData[0x1E7B] < format=hex >;
 } save;
 
 AC_SAVE secondCopy;
