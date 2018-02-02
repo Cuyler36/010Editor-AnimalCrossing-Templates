@@ -1,0 +1,230 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: Animal Crossing GCI Save File Template
+//   Authors: Cuyler
+//   Version: 0.1
+//   Purpose: Shows various save file structures for Animal Crossing GCI save files
+//  Category: Save File Template
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+FSeek(0x26040);
+struct AC_SAVE {
+    int static;
+    char gameId[4];
+    ushort townId;
+    byte lastPlayDate[8];
+    ushort checksum;
+    int prepadding[3];
+    struct PLAYER {
+        char name[8];
+        char townName[8];
+        ushort playerId;
+        ushort townId;
+        byte gender;
+        byte faceType;
+        byte resetCount;
+        byte unknown;
+        int padding[20];
+        struct INVENTORY {
+            ushort itemId[15];
+        } inventory;
+        ushort padding1;
+        int padding2;
+        uint bells;
+        uint debt;
+        int padding3[260];
+        ushort heldItem;
+        ushort padding4;
+        char unknownLetterStrings[0x38];
+
+        struct MAIL {
+            char receipiantName[8];
+            char townName[8];
+            ushort receipiantId;
+            ushort townId;
+            ushort unknown1;
+            char senderName[8];
+            char senderTownName[8];
+            ushort senderId;
+            ushort senderTownId;
+            byte eventType; // Unsure about this
+            byte unknown2;
+            ushort presentId;
+            byte read;
+            byte unknown3;
+            byte senderType; // Don't know about this
+            byte stationaryItemIdLowerByte;
+            char body[0xF8];
+        } mail[10]; // struct size: 0x12A
+
+        ushort pocketsBackgroundItem;
+        int padding5;
+        ushort shirt;
+        int padding6[6];
+        ushort padding7;
+        struct BIRTHDAY {
+            byte month;
+            byte day;
+        } birthday;
+        int padding8[19];
+        int resetCode;
+        int bitmapData[77];
+        uint savings;
+        int padding9[4];
+        struct PATTERN {
+            char name[16];
+            byte palette;
+            byte unused[15];
+            byte doublePixelDataArray[0x200];
+        } pattern[8];
+        int padding10[34]; // Padding dictates unknowns.
+        byte tan;
+        byte padding11[3];
+        int padding12[29];
+    } player[4];
+    char townName[8];
+    ushort static2;
+    ushort townId;
+
+    struct MESSAGEBOARD_POST {
+        char body[0xC0];
+        byte date[8];
+    } messageBoardPost[15];
+    
+    int messageBoardPadding;
+
+    struct HOUSE {
+        char ownerName[8];
+        char townName[8];
+        ushort ownerId;
+        ushort townId;
+        byte houseFlags[0x18];
+        byte roofColor;
+        byte roofColorTomorrow;
+        ushort housePadding;
+        int housePadding2[2];
+        
+        struct ROOM {
+            struct LAYER {
+                ushort items[0x100];
+                byte itemsEnabledBitmap[0x20]; // each byte has 8 floor spaces attributed to it.
+                int layerPadding[2];
+            } layer[4];
+            byte carpetLowerByte;
+            byte wallpaperLowerByte;
+            byte unknown[6];
+        } room[3];
+
+        MAIL mail[10];
+
+        struct GYROID {
+
+            struct GYROID_ITEM {
+                ushort itemId;
+                byte unknown;
+                byte sellType;
+                uint sellPrice;
+            } gyroidItem[4];
+            
+            char message[0x80];
+        } gyroid;
+
+        int gyroidPadding;
+        byte enterDate[8]; // may not be enter but it's a date
+        byte cockroachCount;
+        byte houseEndPadding[0x2F];
+    } house[4];
+
+    struct TOWN {
+        struct TOWN_ACRE_ITEMS {
+            ushort items[256];
+        } townAcreItems[30];
+
+        ushort townAcreId[70];
+    } town;
+
+    int townEndPadding;
+    
+    struct VILLAGER {
+        ushort villagerId;
+        ushort townId;
+        char townName[8];
+        byte speechType; // Usually the lower byte of the villager id. 0xFF for islanders.
+        byte personality;
+        ushort padding;
+        
+        struct PLAYER_ENTRY {
+            char playerName[8];
+            char playerTownName[8];
+            ushort playerId;
+            ushort playerTownId;
+            byte metDate[8];
+            char metTownName[8]; // unsure about if it's the "met" town name.
+            ushort metTownId;
+            byte unknown[0x29];
+            char savedLetter[0xC0];
+            byte unknown2[0x29];
+        } playerEntry[7];
+
+        byte unknownByte;
+        byte houseMapCoordinates[4];
+        char catchphrase[10];
+        byte unknownByte2;
+        byte unknownData[14];
+        char unknownCharArray1[8]; // probably something to do with player(s)
+        char unknownCharArray2[8];
+        ushort unknownShort1;
+        ushort unknownShort2;
+        byte unknownData2[6];
+        char somePlayerName[8];
+        char unknownCharArray3[8];
+        int charArrayPadding;
+        ushort shirt;
+        byte unknownData3[0xA2];
+    } villager[15];
+
+    byte unknownAfterVillagerData[0xDE]; // some string stuff
+    
+    struct NOOKS_SHOP {
+        ushort items[24];
+        byte unknownShopData[0x28];
+        byte shopLevel < comment="Lower 2 bits (0 = Cranny, 1 = Nook 'n' Go, 2 = Nookway)" >;
+        byte unknownShopByte;
+        uint shopPurchaseSum; // must be greater or equal to 240,000 for Nookingtons
+        byte shopDateData[16]; // two unknown dates
+        int visitorHasPurchasedFlag < comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
+    } nooksShop;
+    
+    byte unknownAfterNooksShopData[0x21C];
+    MAIL unknownMail[7]; // Sent mail?
+    byte unknownPreBuriedData[0x5A];
+    byte buriedBitmap[0x3C0];
+    byte unknownAfterBuriedData[0x124];
+    PATTERN ableSistersPatterns[8];
+    byte unknownAfterAbleSistersData[0x40];
+
+    struct ISLAND {
+        char islandName[8];
+        char townName[8];
+        ushort staticIslandId;
+        ushort townId;
+        TOWN_ACRE_ITEMS islandAcreItems[2];
+        byte acreItemsPadding[0xC];
+        ROOM islandCabana;
+        byte cabanaUnknownAfterData[0x238];
+        VILLAGER islander; // Should make a custom struct. Islander's player entires can include a furniture item to customize their house.
+        byte islandBuriedBitmap[0x40];
+        byte unknownIslandData[0x118];
+        PATTERN flag;
+    } island;
+
+    byte unknownAfterIslandData[0x44];
+    byte townGrassType;
+    byte unknownEndData[0x1E7B];
+} save;
+
+AC_SAVE secondCopy;
