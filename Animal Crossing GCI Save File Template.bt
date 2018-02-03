@@ -9,7 +9,7 @@
 // File Mask: 
 //  ID Bytes: 
 //   History: 
-//      TODO: Police Station Items, Camper, & Town Tune
+//      TODO: Camper
 //------------------------------------------------
 
 FSeek(0x1504);
@@ -197,13 +197,20 @@ struct AC_SAVE {
             DATE metDate < comment=DateString >;
             char metTownName[8]; // unsure about if it's the "met" town name.
             ushort metTownId < format=hex >;
-            byte unknown[0x29] < format=hex >;
+            byte unknown[10] < format=hex >;
+            byte friendship < format=hex,comment=RealFriendshipValue >;
+            byte unknown2[0x1E];
             char savedLetter[0xC0] < format=hex >;
-            byte unknown2[0x29] < format=hex >;
+            byte unknown3[0x29] < format=hex >;
         } playerEntry[7];
 
         byte unknownByte < format=hex >;
-        byte houseMapCoordinates[4] < format=hex >;
+        struct HOUSE_COORDINATES {
+            byte xAcre < format=hex >;
+            byte yAcre < format=hex >;
+            byte xPosition < format=hex >;
+            byte yPosition < format=hex >;
+        } houseCoordinates;
         char catchphrase[10];
         byte unknownByte2 < format=hex >;
         byte unknownData[14] < format=hex >;
@@ -234,7 +241,12 @@ struct AC_SAVE {
     
     byte unknownAfterNooksShopData[0x21C] < format=hex >;
     MAIL unknownMail[7]; // Sent mail?
-    byte unknownPreBuriedData[0x5A] < format=hex >;
+    byte unknownPreBuriedData[6] < format=hex >;
+    DATE policeStationRefreshDate < comment=DateString >;
+    ushort policeStationLostAndFoundItems[21] < format=hex >;
+    byte unknownAfterLostAndFoundData[14] < format=hex >;
+    byte townTuneData[8] < format=hex,comment="Each nibble represents one of the 16 tune slots." >;
+    byte unknownAfterTownTuneData[12] < format=hex >; // Seems to contain a short date (year, month)
     byte buriedBitmap[0x3C0] < format=binary >;
     byte unknownAfterBuriedData[0x124] < format=hex >;
     PATTERN ableSistersPatterns[8];
@@ -425,4 +437,14 @@ string DateString(DATE &date)
 string BirthdayString(BIRTHDAY &birthday)
 {
     return MonthString(birthday.month) + " " + DayString(birthday.day);
+}
+
+string RealFriendshipValue(byte Friendship)
+{
+    string friendship;
+    if (Friendship < 1)
+        return "Invalid friendship level. Needs to be between 0x01 and 0x7F.";
+    SPrintf(friendship, "%d", Friendship - 1);
+
+    return "Real friendship level: " + friendship;
 }
