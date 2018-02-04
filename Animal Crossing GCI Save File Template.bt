@@ -73,7 +73,10 @@ struct AC_SAVE {
         } lastPlayDate < comment=DateString >; // may not be "last play" date
     
         ushort checksum < format=hex >;
-        int unknownHeaderData[3] < format=hex >;
+        int gameState < format=hex,comment="Usually 0x22. Don't mess with this." >;
+        byte villagerCount < format=hex,comment="This doesn't include the islander" >;
+        byte villagerLeavingIndex < format=hex,comment="The villager who left/is leaving. Will be 0xFF if no one is leaving." >;
+        byte unknownHeaderData2[6];
     } header;
 
     struct PLAYER {
@@ -199,7 +202,8 @@ struct AC_SAVE {
             ushort metTownId < format=hex >;
             byte unknown[10] < format=hex >;
             byte friendship < format=hex,comment=RealFriendshipValue >;
-            byte unknown2[0x1E];
+            byte playerEntryFlags < format=binary,comment="Bit 5 (0x20) is the 're-mail' flag." >;
+            byte unknown2[0x1D];
             char savedLetter[0xC0] < format=hex >;
             byte unknown3[0x29] < format=hex >;
         } playerEntry[7];
@@ -223,10 +227,23 @@ struct AC_SAVE {
         char unknownCharArray3[8];
         int charArrayPadding < format=hex >;
         ushort shirt < format=hex >;
-        byte unknownData3[0xA2] < format=hex >;
+        byte unknownData3[7] < format=hex >;
+        byte villagerSchedule < format=hex >;
+        ushort villagerPresentShirt < format=hex,comment="This may be the shirt a villager wears if given one as a presnet." >;
+        byte villagerRelations[15] < format=hex,comment="The villager's relationships with other villagers." >; // Not sure about this
+        byte unknownData4[0x89] < format=hex >;
     } villager[15];
 
-    byte unknownAfterVillagerData[0xDE] < format=hex >; // some string stuff
+    struct LAST_VILLAGER_WHO_LEFT {
+        ushort villagerId < format=hex >;
+        ushort originalTownId < format=hex >;
+        char originalTownName[8];
+        int unknown < format=hex >;
+        ushort shirt < format=hex >;
+        int unknown < format=hex >;
+    } lastVillagerWhoLeft;
+
+    byte unknownAfterVillagerData[0xC8] < format=hex >; // some string stuff
     
     struct NOOKS_SHOP {
         ushort items[24] < format=hex >;
@@ -248,7 +265,10 @@ struct AC_SAVE {
     byte townTuneData[8] < format=hex,comment="Each nibble represents one of the 16 tune slots." >;
     byte unknownAfterTownTuneData[12] < format=hex >; // Seems to contain a short date (year, month)
     byte buriedBitmap[0x3C0] < format=binary >;
-    byte unknownAfterBuriedData[0x124] < format=hex >;
+    DATE nextVillagerMoveInDate < comment=DateString >;
+    byte unknownAfterBuriedData[0x6A] < format=hex >;
+    byte villagersWhoLivedInYourTownBitmap[0x1F] < format=binary,comment="A bitmap of any villagers who have ever lived in your town." >; // Not 100% sure on this.
+    byte unknownAfterVillagerBitmapData[0x93] < format=hex >;
     PATTERN ableSistersPatterns[8];
     byte unknownAfterAbleSistersData[0x40] < format=hex >;
 
