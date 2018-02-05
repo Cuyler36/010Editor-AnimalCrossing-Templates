@@ -1,0 +1,37 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Script File
+//
+//      File: Animal Crossing Checksum Updater
+//   Authors: Cuyler
+//   Version: 0.1
+//   Purpose: Updates the checksum of Animal Crossing GCI files
+//  Category: Checksum Updater
+//   History: 
+//------------------------------------------------
+
+void UpdateChecksum(){
+    BigEndian();
+    
+    local int i;
+    local ushort Checksum = 0;
+    local int Position = 0x26040;
+    local ushort CurrentValue = 0;
+    FSeek(Position);
+
+    for (i = Position; i < 0x4C040; i += 2){
+        CurrentValue = ReadUShort(FTell());
+
+        if (Position != 0x26052){
+            Checksum += CurrentValue;
+        }
+
+        Position = i;
+        FSeek(Position);
+    }
+
+    Printf("Calculated Checksum: 0x%04X\n", -Checksum);
+    WriteUShort(0x26052, (ushort)(-Checksum));
+    Printf("Successfully updated the file's checksum!\n");
+}
+
+UpdateChecksum();
