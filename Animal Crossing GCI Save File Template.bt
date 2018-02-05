@@ -256,7 +256,9 @@ struct AC_SAVE {
         int visitorHasPurchasedFlag < format=hex,comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
     } nooksShop;
     
-    byte unknownAfterNooksShopData[0x21C] < format=hex >;
+    byte unknownAfterNooksShopData[0x208] < format=hex >;
+    ushort nativeTownFruitItemId < format=hex,comment=FruitString >;
+    byte unknownAfterNativeFruitData[0x12];
     MAIL unknownMail[7]; // Sent mail?
     byte unknownPreBuriedData[6] < format=hex >;
     DATE policeStationRefreshDate < comment=DateString >;
@@ -467,4 +469,23 @@ string RealFriendshipValue(byte Friendship)
     SPrintf(friendship, "%d", Friendship - 1);
 
     return "Real friendship level: " + friendship;
+}
+
+string FruitString(ushort FruitId)
+{
+    switch (FruitId)
+    {
+        case 0x2800:
+            return "Apple";
+        case 0x2801:
+            return "Cherry";
+        case 0x2802:
+            return "Pear";
+        case 0x2803:
+            return "Peach";
+        case 0x2804:
+            return "Orange";
+        default:
+            return "Invalid Fruit Item Id (0x2800-0x2805)";
+    }
 }
