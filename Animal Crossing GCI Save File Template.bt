@@ -15,23 +15,23 @@
 FSeek(0x1504);
 
 struct MAIL {
-    char receipiantName[8];
-    char townName[8];
-    ushort receipiantId < format=hex >;
-    ushort townId < format=hex >;
-    ushort unknown1 < format=hex >;
-    char senderName[8];
-    char senderTownName[8];
-    ushort senderId < format=hex >;
-    ushort senderTownId < format=hex >;
-    byte eventType < format=hex >; // Unsure about this
-    byte unknown2 < format=hex >;
-    ushort presentId < format=hex >;
-    byte read < format=hex >;
-    byte unknown3 < format=hex >;
-    byte senderType < format=hex >; // Don't know about this
-    byte stationaryItemIdLowerByte < format=hex >;
-    char body[0xF8];
+    char receipiantName[8]; // 0
+    char townName[8]; // 8
+    ushort receipiantId < format=hex >; // 0x10
+    ushort townId < format=hex >; // 0x12
+    ushort unknown1 < format=hex >; // 0x14
+    char senderName[8]; // 0x16
+    char senderTownName[8]; // 0x1E
+    ushort senderId < format=hex >; // 0x26
+    ushort senderTownId < format=hex >; // 0x28
+    byte eventType < format=hex >; // Unsure about this 0x2A
+    byte unknown2 < format=hex >; // 0x2B
+    ushort presentId < format=hex >; // 0x2C
+    byte read < format=hex >; // 0x2E
+    byte unknown3 < format=hex >; // 0x2F
+    byte senderType < format=hex >; // Don't know about this 0x30
+    byte stationaryItemIdLowerByte < format=hex >; // 0x31
+    char body[0xF8]; // 0x32
 } savedLetters[160]; // struct size: 0x12A
 
 FSeek(0xCFE0);
@@ -203,15 +203,22 @@ struct AC_SAVE {
             byte unknown[10] < format=hex >;
             byte friendship < format=hex,comment=RealFriendshipValue >;
             byte playerEntryFlags < format=binary,comment="Bit 5 (0x20) is the 're-mail' flag." >;
-            byte unknown2[5] < format=hex >;
-            char savedLetter[0xF8] < format=hex >;
-            byte unknown3 < format=hex >;
+            struct ANIMAL_MAIL {
+                byte unknown2 < format=hex >; // from "read" in regular mail (maybe this is really flags?)
+                byte stationaryItemIdLowerByte < format=hex >;
+                ushort presentId < format=hex >;
+                byte unknown8 < format=hex >; // from "unknown 3" in regular mail
+                char letterHeader[0x18] < format=hex >;
+                char letterBody[0xC0] < format=hex >;
+                char letterFooter[0x20] < format=hex >;
+                byte unknown3 < format=hex >;
             
-            struct SHORT_DATE {
-                ushort year;
-                byte month < comment=MonthString >;
-                byte day;
-            } letterSentDate < comment=ShortDateString >;
+                struct SHORT_DATE {
+                    ushort year;
+                    byte month < comment=MonthString >;
+                    byte day;
+                } letterSentDate < comment=ShortDateString >;
+            } savedLetter;
 
             int unknown4 < format=hex >;
         } playerEntry[7];
