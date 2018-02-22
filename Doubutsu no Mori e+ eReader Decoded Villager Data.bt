@@ -1,0 +1,49 @@
+//------------------------------------------------
+//--- 010 Editor v8.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+struct DLC_Villager {
+    struct Villager_Info {
+        byte unknown;
+        char name[6];
+        char catchphrase[4];
+        byte unknown2;
+        byte unknown3;
+        byte looks;
+        byte shirtItemIdLowerByte;
+        byte unknown6;
+        byte unknown7;
+        byte unknown8;
+        byte unknown9;
+        ushort unknown10;
+        ushort unknown11;
+        byte unknown12;
+        byte unknown13;
+        ushort unknown14;
+        byte unknown15;
+        byte unknown16;
+        byte unknown17;
+        byte unknown18;
+        byte unknown19;
+        byte unknown20;
+        byte unknown21;
+        byte unknown22;
+        byte unknown23;
+        byte unknown24;
+    } villagerInfo;
+    
+    FSeek(2117);
+
+    struct Villager_Texture {
+        ushort palette[0x10];
+        byte doublePixelBytes[0x1200];
+    } Texture;
+} dlcVillager;

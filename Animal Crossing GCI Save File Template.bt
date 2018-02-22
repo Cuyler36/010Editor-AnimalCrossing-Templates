@@ -203,9 +203,17 @@ struct AC_SAVE {
             byte unknown[10] < format=hex >;
             byte friendship < format=hex,comment=RealFriendshipValue >;
             byte playerEntryFlags < format=binary,comment="Bit 5 (0x20) is the 're-mail' flag." >;
-            byte unknown2[0x1D];
-            char savedLetter[0xC0] < format=hex >;
-            byte unknown3[0x29] < format=hex >;
+            byte unknown2[5] < format=hex >;
+            char savedLetter[0xF8] < format=hex >;
+            byte unknown3 < format=hex >;
+            
+            struct SHORT_DATE {
+                ushort year;
+                byte month < comment=MonthString >;
+                byte day;
+            } letterSentDate < comment=ShortDateString >;
+
+            int unknown4 < format=hex >;
         } playerEntry[7];
 
         byte unknownByte < format=hex >;
@@ -454,6 +462,14 @@ string DateString(DATE &date)
     return DayOfWeek(date.dayOfWeek) + ", " + MonthString(date.month) + " "
         + DayString(date.day) + ", " + year + " at " + HourString(date.hour) + ":"
         + minute + ":" + second + " " + GetAmPm(date.hour);
+}
+
+string ShortDateString(SHORT_DATE &date)
+{
+    string year;
+
+    SPrintf(year, "%d", date.year);
+    return MonthString(date.month) + " " + DayString(date.day) + ", " + year;
 }
 
 string BirthdayString(BIRTHDAY &birthday)
