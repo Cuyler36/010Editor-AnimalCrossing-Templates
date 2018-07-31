@@ -76,7 +76,8 @@ struct AC_SAVE {
         int gameState < format=hex,comment="Usually 0x22. Don't mess with this." >;
         byte villagerCount < format=hex,comment="This doesn't include the islander" >;
         byte villagerLeavingIndex < format=hex,comment="The villager who left/is leaving. Will be 0xFF if no one is leaving." >;
-        byte unknownHeaderData2[6];
+        ushort copyProtectionCode < format=hex,comment="Something to do with copy protection. It's set in InitGameStart_bg_make_data." >;
+        int headerPadding;
     } header;
 
     struct PLAYER {
@@ -93,7 +94,7 @@ struct AC_SAVE {
             ushort itemId[15] < format=hex >;
         } inventory;
         ushort padding1 < format=hex >;
-        int padding2 < format=hex >;
+        int inventoryFlags < format=binary,comment="Two bits for each item. 0 = no modifier, 1 = Present, 2 = QuestItem 3 = Invalid?" >;
         uint bells < format=decimal >;
         uint debt < format=decimal >;
         int padding3[260] < format=hex >;
@@ -266,8 +267,8 @@ struct AC_SAVE {
         byte shopLevelUpper2Bits < format=binary,comment=ShopSize >;
         byte unknownShopByte < format=hex >;
         uint shopPurchaseSum < format=decimal >; // must be greater or equal to 240,000 for Nookingtons
-        DATE shopDate1 < comment=DateString >; // two unknown dates
-        DATE shopDate2 < comment=DateString >;
+        DATE shopDate1 < comment=DateString >; // unknown date
+        DATE shopUpgradeDate < comment=DateString >;
         int visitorHasPurchasedFlag < format=hex,comment="if set to 1, a visitor for another town has bought an item. This is required to be one for nookingtons (also must have a total sale sum of 240,000 bells)" >;
     } nooksShop;
     
