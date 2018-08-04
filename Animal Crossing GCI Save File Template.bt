@@ -387,7 +387,7 @@ string MonthString(byte Month)
     switch (Month)
     {
         case 0x01:
-            return "Januaray";
+            return "January";
         case 0x02:
             return "February";
         case 0x03:
